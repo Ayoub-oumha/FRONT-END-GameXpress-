@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import axiosClient from '../api/axiosClient';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ function Login() {
     setSuccess(false);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/admin/login', formData);
+      const response = await axiosClient.post('/admin/login', formData);
       console.log('Login successful:', response.data);
       setSuccess(true);
        

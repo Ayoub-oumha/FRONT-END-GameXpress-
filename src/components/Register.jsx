@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ function Register() {
     setSuccess(false);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/admin/register', formData);
+      const response = await axiosClient.post('/admin/register', formData);
       console.log('Registration successful:', response.data);
       setSuccess(true);
       setFormData({
