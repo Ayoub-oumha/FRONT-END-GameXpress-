@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { logout, user } = useAuth();
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -13,41 +14,11 @@ function Home() {
     setError(null);
 
     try {
-      // Get token from localStorage
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      // Call logout API with token in header
-      await axios.post(
-        'http://127.0.0.1:8000/api/v1/admin/logout',
-        {}, // empty body
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      // Clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Redirect to login page
+      await logout();
       navigate('/login');
-      
     } catch (err) {
-      setError(err.response?.data?.message || 'Logout failed');
-      console.error('Logout error:', err.response?.data || err);
-      
-      // If token is invalid/expired, force logout anyway
-      if (err.response?.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
-      }
+      setError('Logout failed. Please try again.');
+      console.error('Logout error:', err);
     } finally {
       setLoading(false);
     }
@@ -76,7 +47,9 @@ function Home() {
 
         {/* Your dashboard content goes here */}
         <div className="mt-6 border-t pt-4">
-          <h2 className="text-xl font-semibold mb-4">Welcome to your dashboard</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Welcome to your dashboard{user ? `, ${user.name}` : ''}
+          </h2>
           <p className="text-gray-600">Your content will appear here.</p>
         </div>
       </div>
@@ -84,4 +57,4 @@ function Home() {
   );
 }
 
-export default Home;    
+export default Home;
