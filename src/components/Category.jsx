@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { formToJSON } from 'axios';
 import '../styleCategory.css'; // You'll need to create this CSS file
 import axiosClient from '../api/axiosClient';
 
@@ -17,7 +17,7 @@ function Category() {
   // Fetch categories on component mount
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, []); 
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -47,7 +47,7 @@ function Category() {
 
   const handleEdit = (category) => {
     setIsEditing(true);
-    setCurrentCategoryId(category._id);
+    setCurrentCategoryId(category.id);
     setFormData({
       name: category.name,
     });
@@ -66,9 +66,10 @@ function Category() {
     e.preventDefault();
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:5000/api/categories/${currentCategoryId}`, formData);
+        await axiosClient.put(`/admin/categories/${currentCategoryId}`, formData);
       } else {
-        await axios.post('http://localhost:5000/api/categories', formData);
+        console.log('Form data:', formData); // Debugging line
+        await axiosClient.post('/admin/categories', formData);
       }
       setShowModal(false);
       fetchCategories();
@@ -81,7 +82,7 @@ function Category() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this category? This might affect products associated with this category.')) {
       try {
-        await axios.delete(`http://localhost:5000/api/categories/${id}`);
+        await axiosClient.delete(`/admin/categories/${id}`);
         fetchCategories();
       } catch (err) {
         setError('Failed to delete category.');
@@ -117,7 +118,7 @@ function Category() {
             <tbody>
               {categories.length > 0 ? (
                 categories.map((category) => (
-                  <tr key={category._id}>
+                  <tr key={category.id}>
                    
                     <td>{category.name}</td>
                     {/* <td>{category.productsCount || 0}</td> */}
@@ -130,7 +131,7 @@ function Category() {
                       </button>
                       <button 
                         className="delete-button"
-                        onClick={() => handleDelete(category._id)}
+                        onClick={() => handleDelete(category.id)}
                       >
                         Delete
                       </button>
@@ -165,27 +166,10 @@ function Category() {
                   onChange={handleChange}
                   required
                 />
+               
               </div>
-              <div className="form-group">
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="imageUrl">Image URL</label>
-                <input
-                  type="url"
-                  id="imageUrl"
-                  name="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
+             
+              
               <div className="modal-footer">
                 <button type="button" className="cancel-button" onClick={handleCloseModal}>
                   Cancel

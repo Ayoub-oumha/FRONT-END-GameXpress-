@@ -11,18 +11,30 @@ function Product() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     price: '',
-    imageUrl: '',
-    category: '',
-    stock: ''
+    slug: '',
+    category_id : '',
+    stock: '',
+    status:'',
+    image : null ,
   });
   const [currentProductId, setCurrentProductId] = useState(null);
-
+  const [categories, setCategories] = useState([]);
+  
   // Fetch products on component mount
   useEffect(() => {
     fetchProducts();
+    fetchCategories(); 
   }, []);
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosClient.get('/admin/categories');
+      setCategories(response.data);
+      console.log(response.data);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -46,7 +58,7 @@ function Product() {
       description: '',
       price: '',
       imageUrl: '',
-      category: '',
+      category_id: '',
       stock: ''
     });
   };
@@ -57,34 +69,55 @@ function Product() {
 
   const handleEdit = (product) => {
     setIsEditing(true);
-    setCurrentProductId(product._id);
+    setCurrentProductId(product.id);
     setFormData({
       name: product.name,
       description: product.description,
+      slug: product.slug,
       price: product.price,
       imageUrl: product.imageUrl,
-      category: product.category,
+      category_id: product.category_id,
       stock: product.stock
     });
     setShowModal(true);
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+    const { name, value , files } = e.target;
+    if (name === 'image') {
+        setFormData((prev) => ({ ...prev, image: files[0] }));
+    }
+    else {
+         setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    }
+   
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:5000/api/products/${currentProductId}`, formData);
+        await axiosClient.put(`/admin/products/${currentProductId}`, formData);
       } else {
-        await axios.post('http://localhost:5000/api/products', formData);
+        const form = new FormData();
+        form.append("name", formData.name);
+        form.append("slug", formData.slug);
+        form.append("price", formData.price);
+        form.append("category_id", formData.category_id);
+        form.append("stock", formData.stock);
+        form.append("status", formData.status);
+        form.append("image", formData.image); // File input
+  
+        await axiosClient.post('/admin/products', form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
+  
       setShowModal(false);
       fetchProducts();
     } catch (err) {
@@ -92,11 +125,12 @@ function Product() {
       console.error('Error saving product:', err);
     }
   };
+  
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
+        await axiosClient.delete(`/admin/products/${id}`);
         fetchProducts();
       } catch (err) {
         setError('Failed to delete product.');
@@ -104,6 +138,15 @@ function Product() {
       }
     }
   };
+  const getCategoryName = (categoryId) => {
+    const category = categories.find( cat => cat.id == categoryId)
+    return category ? category.name : "Unknown Category" ;
+    // console.log(category ? category.name : "Unknown Category")
+    // return category.name ;
+  }
+//   getCategoryName(1);
+  
+
 
   return (
     <div className="product-container">
@@ -125,7 +168,7 @@ function Product() {
               <tr>
                 <th>Image</th>
                 <th>Name</th>
-                <th>Description</th>
+                {/* <th>Description</th> */}
                 <th>Price</th>
                 <th>Category</th>
                 <th>Stock</th>
@@ -138,15 +181,15 @@ function Product() {
                   <tr key={product.id}>
                     <td>
                       <img 
-                        src={product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D'} 
+                        src={product.primary_image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D'} 
                         alt={product.name}
                         className="product-image"
                       />
                     </td>
                     <td>{product.name}</td>
-                    <td className="description-cell">{product.description}</td>
+                    {/* <td className="description-cell">{product.description}</td> */}
                     <td>${product.price}</td>
-                    <td>{product.category}</td>
+                    <td>{getCategoryName(product.category_id)}</td>
                     <td>{product.stock}</td>
                     <td className="action-buttons">
                       <button 
@@ -157,7 +200,7 @@ function Product() {
                       </button>
                       <button 
                         className="delete-button"
-                        onClick={() => handleDelete(product._id)}
+                        onClick={() => handleDelete(product.id)}
                       >
                         Delete
                       </button>
@@ -194,11 +237,12 @@ function Product() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
+                <label htmlFor="name">Product slug</label>
+                <input
+                  type="text"
+                  id="slug"
+                  name="slug"
+                  value={formData.slug}
                   onChange={handleChange}
                   required
                 />
@@ -231,23 +275,44 @@ function Product() {
                 </div>
               </div>
               <div className="form-group">
-                <label htmlFor="category">Category</label>
-                <input
-                  type="text"
+              <label htmlFor="category">Category</label>
+                <select
                   id="category"
-                  name="category"
-                  value={formData.category}
+                  name="category_id"
+                  value={formData.category_id}
                   onChange={handleChange}
                   required
-                />
+                  className="category-select w-full p-3"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+              <label htmlFor="status">Status</label>
+                <select  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="status-select , w-full p-3">
+                    <option value="">Select status</option>
+                    <option value="available">available</option>
+                    <option value="out_of_stock">out of stock</option>
+                </select>
+               
               </div>
               <div className="form-group">
                 <label htmlFor="imageUrl">Image URL</label>
                 <input
-                  type="url"
-                  id="imageUrl"
-                  name="imageUrl"
-                  value={formData.imageUrl}
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                //   value={formData.image}
                   onChange={handleChange}
                 />
               </div>

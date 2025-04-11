@@ -23,8 +23,8 @@ import Category from "../components/Category";
           element : <ProtectedRoute roles={["super_admin"]}/>, children : [
            {path: "/" , element: <Home/>} ,
            {path: "/dashboard" , element: <Dashboard/>} ,
-           {path: "/product" , element: <Product/>} ,
-           {path: "/category" , element: <Category/>} ,
+           {path: "/products" , element: <Product/>} ,
+           {path: "/categories" , element: <Category/>} ,
           ],
         },
         {path: "/home" , element: <Home/>},
