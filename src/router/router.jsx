@@ -35,6 +35,7 @@ import Category from "../components/Category";
     {path : "/register" , element : <Register/>} ,
     {path : "/unauthorized" , element : <h1>Unauthorized</h1>} ,
    
+
     
   
   ]);
