@@ -14,6 +14,7 @@ import LoginTest from "../components/LoginTest";
 import Dashboard from "../components/Dashboard";
 import Product from "../components/Product";
 import Category from "../components/Category";
+
   
   export const router = createBrowserRouter([
     {
@@ -33,6 +34,7 @@ import Category from "../components/Category";
     {path : "/login" , element : <LoginTest/>} ,
     {path : "/register" , element : <Register/>} ,
     {path : "/unauthorized" , element : <h1>Unauthorized</h1>} ,
+  
   
   ]);
   
