@@ -28,19 +28,16 @@ import HomeUser from "../components/HomeUser";
            {path: "/products" , element: <Product/>} ,
            {path: "/categories" , element: <Category/>} ,
           ],
-          element : <ProtectedRoute roles={["user"]}/>, children : [
+          element : <ProtectedRoute roles={["user" , "guest"]}/>, children : [
             {path : "/homeuser" , element : <HomeUser/>} ,
            ],
         },
         {path: "/home" , element: <Home/>},
-        {path : "/homeuser" , element : <HomeUser/>} ,
+        {path: "/unauthorized" , element: <p>you don't have access</p>},
       ]
     },
     {path : "/login" , element : <LoginTest/>} ,
     {path : "/register" , element : <Register/>} ,
-   
-
-
-  
+    {path : "/homeuser" , element : <HomeUser/>} ,
   ]);
   
