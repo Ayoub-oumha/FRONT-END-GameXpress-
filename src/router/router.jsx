@@ -15,6 +15,7 @@ import Dashboard from "../components/Dashboard";
 import Product from "../components/Product";
 import Category from "../components/Category";
 import HomeUser from "../components/HomeUser";
+import Cart from "../components/Cart";
 
   
   export const router = createBrowserRouter([
@@ -30,10 +31,11 @@ import HomeUser from "../components/HomeUser";
           ],
           element : <ProtectedRoute roles={["user"]}/>, children : [
             {path : "/homeuser" , element : <HomeUser/>} ,
+            {path : "/cart" , element : <Cart/>} ,
            ],
         },
         {path: "/home" , element: <Home/>},
-        {path : "/homeuser" , element : <HomeUser/>} ,
+        // {path : "/homeuser" , element : <HomeUser/>} ,
       ]
     },
     {path : "/login" , element : <LoginTest/>} ,
