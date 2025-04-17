@@ -29,11 +29,17 @@ import Cart from "../components/Cart";
            {path: "/products" , element: <Product/>} ,
            {path: "/categories" , element: <Category/>} ,
           ],
-          element : <ProtectedRoute roles={["user"]}/>, children : [
-            {path : "/homeuser" , element : <HomeUser/>} ,
-            {path : "/cart" , element : <Cart/>} ,
-           ],
+        
         },
+        {
+          element : <ProtectedRoute roles={["super_admin"]}/>, children : [
+           {path: "/" , element: <Home/>} ,
+           {path: "/dashboard" , element: <Dashboard/>} ,
+           {path: "/products" , element: <Product/>} ,
+           {path: "/categories" , element: <Category/>} ,
+          ],
+        
+        } ,
         {path: "/home" , element: <Home/>},
         // {path : "/homeuser" , element : <HomeUser/>} ,
       ]
