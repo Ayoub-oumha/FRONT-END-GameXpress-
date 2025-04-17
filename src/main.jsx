@@ -7,12 +7,14 @@ import { RouterProvider } from 'react-router'
 
 import { router } from './router/router'
 import { AuthProvider } from './context/AuthContext'
+import Tets from './components/Tets'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {/* <RouterProvider router={router} /> */}
+    
     <AuthProvider>
       <RouterProvider router={router} />
-    </AuthProvider>
+    </AuthProvider> 
   </StrictMode>,
 )

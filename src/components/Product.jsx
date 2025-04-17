@@ -30,7 +30,7 @@ function Product() {
     try {
       const response = await axiosClient.get('/admin/categories');
       setCategories(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (err) {
       console.error('Error fetching categories:', err);
     }
@@ -145,8 +145,10 @@ function Product() {
     // return category.name ;
   }
 //   getCategoryName(1);
-  
+  if(products[1].images){
 
+    console.log(products[1].images)
+  }
 
   return (
     <div className="product-container">
@@ -178,10 +180,11 @@ function Product() {
             <tbody>
               {products.length > 0 ? (
                 products.map((product) => (
+                  
                   <tr key={product.id}>
                     <td>
                       <img 
-                        src={product.primary_image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D'} 
+                        src={product.images[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D'} 
                         alt={product.name}
                         className="product-image"
                       />
