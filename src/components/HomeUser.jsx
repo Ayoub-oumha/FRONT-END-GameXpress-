@@ -44,7 +44,7 @@ function HomeUser() {
 
   const addToCart = async (productId) => {
     try {
-      await axiosClient.post('/cart/add', { product_id: productId, quantity: 1 });
+      await axiosClient.post('/cart/client/add', { product_id: productId, quantity: 1 });
       showCartMessage('Product added to cart!', 'success');
     } catch (err) {
       console.error('Error adding to cart:', err);

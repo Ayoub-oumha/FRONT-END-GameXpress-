@@ -15,6 +15,7 @@ import Dashboard from "../components/Dashboard";
 import Product from "../components/Product";
 import Category from "../components/Category";
 import HomeUser from "../components/HomeUser";
+import Cart from "../components/Cart";
 
   
   export const router = createBrowserRouter([
@@ -28,9 +29,14 @@ import HomeUser from "../components/HomeUser";
            {path: "/products" , element: <Product/>} ,
            {path: "/categories" , element: <Category/>} ,
           ],
-          element : <ProtectedRoute roles={["user" , "guest"]}/>, children : [
-            {path : "/homeuser" , element : <HomeUser/>} ,
-           ],
+        },
+        {
+          element : <ProtectedRoute roles={["super_admin"]}/>, children : [
+           {path: "/" , element: <Home/>} ,
+           {path: "/dashboard" , element: <Dashboard/>} ,
+           {path: "/products" , element: <Product/>} ,
+           {path: "/categories" , element: <Category/>} ,
+          ],
         },
         {path: "/home" , element: <Home/>},
         {path: "/unauthorized" , element: <p>you don't have access</p>},
