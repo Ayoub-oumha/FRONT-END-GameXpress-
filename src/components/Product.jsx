@@ -145,10 +145,33 @@ function Product() {
     // return category.name ;
   }
 //   getCategoryName(1);
-  if(products[1].images){
+  // if(products[1].images){
 
-    console.log(products[1].images)
-  }
+  //   console.log(products[1].images)
+  // }
+  const getProductImageUrl = (product) => {
+    if (product?.images && product.images.length > 0) {
+      // Pick the primary image if it exists, otherwise fallback to first image
+      const primaryImage = product.images.find(img => img.is_primary) || product.images[0];
+  
+      // If the image URL is already fully qualified (starts with http), use it as is
+      if (primaryImage.image_url.startsWith('http')) {
+        return primaryImage.image_url;
+      }
+  
+      // If it starts with /storage, it's likely relative to public path
+      if (primaryImage.image_url.startsWith('/storage')) {
+        return "http://127.0.0.1:8000" + primaryImage.image_url;
+      }
+  
+      // If it's just a filename or something else, prepend the full base URL
+      return "http://127.0.0.1:8000/" + primaryImage.image_url;
+    }
+  
+    // Fallback to a default image (from Unsplash)
+    return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?...';
+  };
+  
 
   return (
     <div className="product-container">
@@ -184,7 +207,7 @@ function Product() {
                   <tr key={product.id}>
                     <td>
                       <img 
-                        src={product.images[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D'} 
+                        src={getProductImageUrl(product) || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D'} 
                         alt={product.name}
                         className="product-image"
                       />

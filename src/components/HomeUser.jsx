@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosClient from '../api/axiosClient';
 
 import '../HomeUser.css';
+import { data } from 'react-router-dom';
 
 function HomeUser() {
   const [products, setProducts] = useState([]);
@@ -22,6 +23,7 @@ function HomeUser() {
       setLoading(true);
       const response = await axiosClient.get('/admin/products');
       setProducts(response.data);
+      console.log(response.data)
       setError(null);
     } catch (err) {
       console.error('Error fetching products:', err);
@@ -69,6 +71,29 @@ function HomeUser() {
     ? products 
     : products.filter(product => product.category_id === activeCategory);
 
+
+    const getProductImageUrl = (product) => {
+      if (product?.images && product.images.length > 0) {
+        // Pick the primary image if it exists, otherwise fallback to first image
+        const primaryImage = product.images.find(img => img.is_primary) || product.images[0];
+    
+        // If the image URL is already fully qualified (starts with http), use it as is
+        if (primaryImage.image_url.startsWith('http')) {
+          return primaryImage.image_url;
+        }
+    
+        // If it starts with /storage, it's likely relative to public path
+        if (primaryImage.image_url.startsWith('/storage')) {
+          return "http://127.0.0.1:8000" + primaryImage.image_url;
+        }
+    
+        // If it's just a filename or something else, prepend the full base URL
+        return "http://127.0.0.1:8000/" + primaryImage.image_url;
+      }
+    
+      // Fallback to a default image (from Unsplash)
+      return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?...';
+    };
   return (
     <div className="home-user">
       {/* Hero Section */}
@@ -125,7 +150,7 @@ function HomeUser() {
                 <div className="product-card" key={product.id}>
                   <div className="product-image">
                     <img 
-                      src={product.image_url || 'https://via.placeholder.com/300x300?text=Product+Image'} 
+                      src={getProductImageUrl(product)  || 'https://via.placeholder.com/300x300?text=Product+Image'} 
                       alt={product.name} 
                     />
                   </div>

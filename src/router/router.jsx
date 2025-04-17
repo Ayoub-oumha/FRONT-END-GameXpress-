@@ -28,6 +28,9 @@ import HomeUser from "../components/HomeUser";
            {path: "/products" , element: <Product/>} ,
            {path: "/categories" , element: <Category/>} ,
           ],
+          element : <ProtectedRoute roles={["user"]}/>, children : [
+            {path : "/homeuser" , element : <HomeUser/>} ,
+           ],
         },
         {path: "/home" , element: <Home/>},
         {path : "/homeuser" , element : <HomeUser/>} ,
